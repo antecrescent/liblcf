@@ -7,12 +7,13 @@ endif()
 project(liblcf VERSION 0.8 LANGUAGES CXX)
 
 # Compilation options
+option(BUILD_DOCS "Build documentation (default: OFF)" OFF)
 option(BUILD_SHARED_LIBS "Build shared library, disable for building the static library (default: ON)" ON)
 option(LIBLCF_WITH_ICU "ICU encoding detection (when OFF fallback to iconv, not recommended, default: ON)" ON)
 option(LIBLCF_WITH_XML "XML reading support (expat, default: ON)" ON)
 option(LIBLCF_UPDATE_MIMEDB "Whether to run update-mime-database after install (default: ON)" ON)
 option(LIBLCF_ENABLE_TOOLS "Whether to build the tools (default: ON)" ON)
-option(LIBLCF_ENABLE_TESTS "Whetner to build the unit tests (default: ON)" ON)
+option(LIBLCF_ENABLE_TESTS "Whether to build the unit tests (default: ON)" ON)
 option(LIBLCF_ENABLE_BENCHMARKS "Whether to build the benchmarks (default: OFF)" OFF)
 
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Override CMAKE_DEBUG_POSTFIX.")
@@ -499,13 +500,15 @@ if(LIBLCF_ENABLE_TOOLS)
 endif()
 
 # Doxygen documentation
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-	add_custom_target(liblcf_doc
-		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/builds/Doxyfile
-		DEPENDS lcf
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/builds
-		COMMENT "Generating API documentation with Doxygen" VERBATIM)
-else()
-	message(STATUS "This means no API documentation is generated.")
+if(BUILD_DOCS)
+        find_package(Doxygen)
+	if(DOXYGEN_FOUND)
+	        add_custom_target(liblcf_doc ALL
+		       ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/builds/Doxyfile
+		       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/builds
+		       COMMENT "Generating API documentation with Doxygen"
+		       VERBATIM)
+	else()
+	        message(STATUS "This means no API documentation is generated.")
+	endif()
 endif()
